@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      BASE_URL: http://localhost:4000
+      NODE_ENV: development
+      JWT_SECRET: dev-secret-change-me
+      DATABASE_URL: postgres://widget_user:widget_pass@db:5432/widgetdb
+      GEO_MODE: mock
+      GEO_MOCK_PROVIDER_A_DOWN: "false"
+      GEO_MOCK_PROVIDER_B_DOWN: "false"
+      EMAIL_MODE: smtp
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      EMAIL_FORCE_FAIL: "false"
+      RATE_LIMIT_WINDOW_MS: 60000
+      RATE_LIMIT_MAX: 20
+    depends_on:
+      - db
+      - mailpit
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: widget_user
+      POSTGRES_PASSWORD: widget_pass
+      POSTGRES_DB: widgetdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025" # web UI to view "sent" confirmation emails
+      - "1025:1025" # SMTP catcher
+
+volumes:
+  pgdata:
