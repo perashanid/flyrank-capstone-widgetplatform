@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Acme Co. — a customer's website (different origin)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 60px auto; padding: 0 20px; }
+    header { border-bottom: 1px solid #eee; padding-bottom: 16px; margin-bottom: 24px; }
+    .badge { background: #eef1f8; color: #0f3460; padding: 4px 10px; border-radius: 12px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">Simulated customer site — not part of the API's origin</span>
+    <h1>Acme Co.</h1>
+    <p>This page is served on a different origin/port than the widget API, so the
+       embed below is a genuine cross-origin request — exactly the scenario the
+       capstone's CORS, config-fetch, and submission requirements are testing.</p>
+  </header>
+
+  <main>
+    <h2>Join our newsletter</h2>
+
+    <!--
+      This is the ONE LINE a real customer would paste into their site.
+      Replace WIDGET_ID with the id printed by `npm run seed`, and make sure
+      the value matches the API's actual port if you changed it from 4000.
+    -->
+    <script src="http://localhost:4000/widget.v1.js?id=WIDGET_ID"></script>
+  </main>
+</body>
+</html>
