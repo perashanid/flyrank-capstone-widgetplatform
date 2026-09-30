@@ -1,0 +1,69 @@
+name: flyrank-capstone-widgetplatform
+track: backend
+capstone: "Embeddable Widget & Lead-Capture Platform"
+stack: "Node.js + Express + PostgreSQL"
+
+run: docker compose up --build
+seed: docker compose exec app npm run seed
+test: npm test
+
+base_url: http://localhost:4000
+
+endpoints:
+  - method: POST
+    path: /auth/register
+    auth: none
+    description: Create a tenant account, returns a JWT.
+  - method: POST
+    path: /auth/login
+    auth: none
+    description: Log in, returns a JWT.
+  - method: POST
+    path: /api/widgets
+    auth: bearer
+    description: Create a widget (tenant-isolated).
+  - method: GET
+    path: /api/widgets
+    auth: bearer
+    description: List this tenant's widgets only.
+  - method: GET
+    path: /api/widgets/:id
+    auth: bearer
+    description: Get one widget, 404 if owned by another tenant.
+  - method: PUT
+    path: /api/widgets/:id
+    auth: bearer
+    description: Update a widget.
+  - method: DELETE
+    path: /api/widgets/:id
+    auth: bearer
+    description: Delete a widget.
+  - method: GET
+    path: /widget.v1.js?id=:widgetId
+    auth: none
+    description: Public, long-cache, versioned embeddable bundle.
+  - method: GET
+    path: /widgets/:id/config
+    auth: none
+    description: Public, short-cache widget config. CORS-enabled.
+  - method: POST
+    path: /submissions
+    auth: none
+    description: >
+      Public, CORS-enabled submission endpoint. Validates payload, enforces
+      rate limiting (429 on burst), checks honeypot, enriches via geo fallback
+      chain (provider A -> provider B -> none), stores, then attempts a
+      non-blocking email confirmation.
+  - method: GET
+    path: /api/dashboard/summary
+    auth: bearer
+    description: Per-widget submission counts for this tenant.
+  - method: GET
+    path: /api/dashboard/widgets/:id/stats
+    auth: bearer
+    description: Submissions over time + geo breakdown for one widget.
+
+manual_toggles_for_grading:
+  - "GEO_MOCK_PROVIDER_A_DOWN=true  -> next submission is enriched by Provider B (mock)."
+  - "GEO_MOCK_PROVIDER_A_DOWN=true and GEO_MOCK_PROVIDER_B_DOWN=true -> submission still stored, geo fields null."
+  - "EMAIL_FORCE_FAIL=true -> submission still returns 201/stored even though the confirmation email throws."
